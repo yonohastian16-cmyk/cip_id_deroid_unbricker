@@ -1,12 +1,38 @@
-plugins { id 'com.android.application' }
-android { namespace "com.deroid.unbrickernota"; compileSdk 35
- defaultConfig { applicationId "com.deroid.unbrickernota"; minSdk 23; targetSdk 35; versionCode 3125; versionName '3.11.0' }
+plugins {
+    id 'com.android.application'
 }
+
+android {
+    namespace 'com.deroid.unbricker'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.deroid.unbricker"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
 dependencies {
- implementation 'androidx.appcompat:appcompat:1.7.0'
- implementation 'androidx.camera:camera-core:1.4.1'
- implementation 'androidx.camera:camera-camera2:1.4.1'
- implementation 'androidx.camera:camera-lifecycle:1.4.1'
- implementation 'androidx.camera:camera-view:1.4.1'
- implementation 'com.google.mlkit:text-recognition:16.0.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.espresso:espresso-core:3.5.1'
 }
