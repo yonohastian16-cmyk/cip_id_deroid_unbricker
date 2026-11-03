@@ -1,4 +1,4 @@
-name: Build Deroid Unbricker Nota
+name: Build Deroid Unbricker CIP ID Full
 
 on:
   push:
@@ -21,16 +21,14 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Gradle 8.9
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.9'
 
     - name: Build Debug APK
-      run: gradle :app:assembleDebug --no-daemon --stacktrace
+      run: gradle :app:assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: deroid-unbricker-nota
+        name: deroid-unbricker-cip-id
         path: app/build/outputs/apk/debug/app-debug.apk
