@@ -9,8 +9,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TextView tv = new TextView(this);
-        tv.setText("Deroid Unbricker - CIP ID\nWatermark by.deroid unbricker");
-        tv.setTextSize(20);
+        tv.setText("Deroid Unbricker CIP ID\nFull Database & Nota System\nWatermark: by.deroid unbricker");
+        tv.setTextSize(18);
         tv.setPadding(32, 32, 32, 32);
         setContentView(tv);
     }

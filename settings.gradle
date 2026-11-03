@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Deroid Unbricker"
+rootProject.name = "Deroid Unbricker CIP ID"
 include ':app'

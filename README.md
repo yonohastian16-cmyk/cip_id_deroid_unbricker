@@ -1,3 +1,3 @@
-# Deroid Unbricker Nota
-Project completely cleaned from legacy names, rebranded to Deroid Unbricker Nota.
-Includes integrated IC compatibility database and corrected resources.
+# Deroid Unbricker CIP ID (Master Full Version)
+- All legacy references removed.
+- Integrated eMMC / UFS database & watermarked.

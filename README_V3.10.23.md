@@ -1,8 +1,3 @@
-# Deroid Unbricker Nota Microscope V3.10.23
-
-- Database tetap full-screen dan kamera ditutup saat Database dibuka.
-- Ditambahkan menu **📊 TABEL GRADE eMMC** di Database.
-- Tabel Grade memakai gambar referensi pengguna.
-- Tampilan tabel full-screen dengan dukungan pinch zoom dan geser gambar.
-- Kuis dan Belajar Cepat tetap tersedia.
-- Kamera kembali Live saat Database ditutup.
+# Deroid Unbricker CIP ID - Release V3.10.23
+- Fully rebranded & cleaned.
+- Watermark: by.deroid unbricker
