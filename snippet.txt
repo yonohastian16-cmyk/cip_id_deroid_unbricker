@@ -1,0 +1,401 @@
+
+        new AlertDialog.Builder(this).setTitle("V3.0 • Crosshair + Grid")
+                .setView(box).setPositiveButton("Selesai",(d,w)->status.setText((crosshairOn||gridOn)?"Overlay aktif • Crosshair + Grid":"Overlay OFF"))
+                .setNeutralButton("Reset",(d,w)->{crosshairOn=false;gridOn=false;gridDivisions=10;overlayColor=Color.GREEN;crosshairColor=Color.RED;overlayAlpha=150;overlayView.refresh();status.setText("Overlay di-reset");}).show();
+    }
+
+    private class AnnotationView extends View {
+        private boolean cropSelecting=false;
+        private float cropStartX, cropStartY, cropEndX, cropEndY;
+        private int cropDragMode=0; // 1 move, 2 TL, 3 TR, 4 BL, 5 BR, 6 T, 7 R, 8 B, 9 L
+        private float cropLastX, cropLastY;
+
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final java.util.ArrayList<Annotation> items = new java.util.ArrayList<>();
+        private AnnotationMode mode = AnnotationMode.NONE;
+        private float startX, startY, endX, endY;
+        private boolean drawing = false;
+        private int currentColor = Color.RED;
+        private float strokeDp = 5f;
+        private Annotation selected;
+        private float lastSelectX, lastSelectY;
+        private float lastRotateAngle = 0f;
+        private boolean rotatingSelected = false;
+        private boolean transformingSelected = false;
+        private boolean moveHistoryPushed = false;
+        private float lastTransformDistance = 0f;
+        private final java.util.ArrayDeque<java.util.ArrayList<Annotation>> undoStack = new java.util.ArrayDeque<>();
+        private final java.util.ArrayDeque<java.util.ArrayList<Annotation>> redoStack = new java.util.ArrayDeque<>();
+        private ScaleGestureDetector jumperScaleDetector;
+        private boolean jumperPinching = false;
+
+        AnnotationView(Context context) {
+            super(context);
+            setBackground(new ColorDrawable(Color.TRANSPARENT));
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            jumperScaleDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                @Override public boolean onScaleBegin(ScaleGestureDetector detector) {
+                    jumperPinching = true;
+                    return true;
+                }
+                @Override public boolean onScale(ScaleGestureDetector detector) {
+                    if (!frozen || frozenBitmap == null) return false;
+                    frozenZoom = Math.max(1f, Math.min(8f, frozenZoom * detector.getScaleFactor()));
+                    updateFrozenImage();
+                    return true;
+                }
+                @Override public void onScaleEnd(ScaleGestureDetector detector) {
+                    jumperPinching = false;
+                }
+            });
+        }
+
+        void setMode(AnnotationMode m) { mode=m; drawing=false; selected=null; rotatingSelected=false; invalidate(); }
+        void prepareOcrHistory(){ if(!items.isEmpty() || items.isEmpty()) pushUndo(); }
+        void addOcr(float x1, float y1, float x2, float y2, String text) {
+            items.add(Annotation.ocr(x1, y1, x2, y2, text, Color.YELLOW, 3f));
+        }
+        void setColor(int color) {
+            currentColor=color;
+            if (selected != null) { pushUndo(); selected.color=color; }
+            invalidate();
+        }
+        void setSize(float size) {
+            strokeDp=size;
+            if (selected != null) { pushUndo(); selected.size=size; }
+            invalidate();
+        }
+
+        private java.util.ArrayList<Annotation> copyItems() {
+            java.util.ArrayList<Annotation> out=new java.util.ArrayList<>();
+            for(Annotation a:items) out.add(a.copy());
+            return out;
+        }
+        private void pushUndo() { undoStack.push(copyItems()); redoStack.clear(); }
+        void undo() {
+            if (undoStack.isEmpty()) return;
+            redoStack.push(copyItems()); items.clear(); items.addAll(undoStack.pop()); selected=null; invalidate();
+        }
+        void redo() {
+            if (redoStack.isEmpty()) return;
+            undoStack.push(copyItems()); items.clear(); items.addAll(redoStack.pop()); selected=null; invalidate();
+        }
+        void clearAll() { if (!items.isEmpty()) pushUndo(); items.clear(); selected=null; invalidate(); }
+        boolean duplicateSelected() {
+            if (selected==null) return false;
+            pushUndo(); Annotation c=selected.copy(); float dx=dp(18)/Math.max(0.35f,frozenMatrix.mapRadius(1f));
+            c.x1+=dx; c.y1+=dx; c.x2+=dx; c.y2+=dx; items.add(c); selected=c; invalidate(); return true;
+        }
+        boolean hasSelectedText(){ return selected!=null && selected.type==AnnotationMode.TEXT; }
+        Annotation getSelectedText(){ return selected; }
+        void changeSelectedText(String value){ if(hasSelectedText()){ pushUndo(); selected.text=value; invalidate(); } }
+
+        private float[] viewToSource(float x, float y) {
+            Matrix inv = new Matrix();
+            frozenMatrix.invert(inv);
+            float[] pts = new float[]{x,y};
+            inv.mapPoints(pts);
+            return pts;
+        }
+
+        private float[] sourceToView(float x, float y) {
+            float[] pts = new float[]{x,y};
+            frozenMatrix.mapPoints(pts);
+            return pts;
+        }
+
+        float[] viewToSourcePublic(float x, float y) { return viewToSource(x,y); }
+
+        void addTextAtView(float x, float y, String text) {
+            float[] p=viewToSource(x,y);
+            pushUndo(); items.add(Annotation.text(p[0],p[1],text,currentColor,strokeDp));
+            invalidate();
+        }
+
+        void beginCrop() {
+            if (getWidth() <= 0 || getHeight() <= 0 || frozenBitmap == null) return;
+            float[] p1 = sourceToView(0, 0);
+            float[] p2 = sourceToView(frozenBitmap.getWidth(), frozenBitmap.getHeight());
+            float il = Math.max(0, Math.min(p1[0], p2[0]));
+            float it = Math.max(0, Math.min(p1[1], p2[1]));
+            float ir = Math.min(getWidth(), Math.max(p1[0], p2[0]));
+            float ib = Math.min(getHeight(), Math.max(p1[1], p2[1]));
+            float w = ir - il, h = ib - it;
+            if (w < 40 || h < 40) { il=8; it=8; ir=getWidth()-8; ib=getHeight()-8; w=ir-il; h=ib-it; }
+            float marginX=w*0.12f, marginY=h*0.12f;
+            cropStartX=il+marginX; cropStartY=it+marginY;
+            cropEndX=ir-marginX; cropEndY=ib-marginY;
+            cropSelecting=true; cropDragMode=0;
+            invalidate();
+        }
+
+        @Override protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            drawAnnotations(canvas);
+            if (drawing && mode != AnnotationMode.TEXT && mode != AnnotationMode.MARKER && mode != AnnotationMode.SELECT && mode != AnnotationMode.PEN && mode != AnnotationMode.CROP && mode != AnnotationMode.JUMPER) {
+                float[] a=viewToSource(startX,startY), b=viewToSource(endX,endY);
+                drawOne(canvas, Annotation.shape(mode,a[0],a[1],b[0],b[1],currentColor,strokeDp));
+            }
+            if (drawing && mode == AnnotationMode.JUMPER) {
+                float[] a=viewToSource(startX,startY), b=viewToSource(endX,endY);
+                drawOne(canvas, Annotation.shape(AnnotationMode.JUMPER,a[0],a[1],b[0],b[1],Color.YELLOW,Math.max(4f,strokeDp)));
+            }
+            if (mode == AnnotationMode.CROP && cropSelecting) {
+                Paint cp = new Paint(Paint.ANTI_ALIAS_FLAG);
+                cp.setStyle(Paint.Style.FILL); cp.setColor(Color.argb(90,0,0,0));
+                canvas.drawRect(0,0,getWidth(),getHeight(),cp);
+                cp.setStyle(Paint.Style.STROKE); cp.setStrokeWidth(dp(2)); cp.setColor(Color.WHITE);
+                float l=Math.min(cropStartX,cropEndX), t=Math.min(cropStartY,cropEndY);
+                float r=Math.max(cropStartX,cropEndX), b=Math.max(cropStartY,cropEndY);
+                canvas.drawRect(l,t,r,b,cp);
+                cp.setColor(Color.YELLOW); cp.setStrokeWidth(dp(1));
+                float thirdW=(r-l)/3f, thirdH=(b-t)/3f;
+                canvas.drawLine(l+thirdW,t,l+thirdW,b,cp); canvas.drawLine(l+2*thirdW,t,l+2*thirdW,b,cp);
+                canvas.drawLine(l,t+thirdH,r,t+thirdH,cp); canvas.drawLine(l,t+2*thirdH,r,t+2*thirdH,cp);
+                // 8 handle: 4 sudut + 4 sisi, lebih mudah untuk crop presisi.
+                cp.setStyle(Paint.Style.FILL); cp.setColor(Color.WHITE);
+                float hs=dp(12);
+                float[] hx={l,r,l,r,(l+r)/2f,r,(l+r)/2f,l};
+                float[] hy={t,t,b,b,t,(t+b)/2f,b,(t+b)/2f};
+                for(int i=0;i<8;i++) canvas.drawRoundRect(hx[i]-hs/2,hy[i]-hs/2,hx[i]+hs/2,hy[i]+hs/2,dp(2),dp(2),cp);
+                cp.setStyle(Paint.Style.STROKE); cp.setStrokeWidth(dp(2)); cp.setColor(Color.WHITE);
+                canvas.drawRect(l,t,r,b,cp);
+                cp.setStyle(Paint.Style.FILL); cp.setColor(Color.argb(220,255,255,255));
+                cp.setTextSize(dp(12)); cp.setTypeface(Typeface.DEFAULT_BOLD);
+                canvas.drawText("GESER AREA • TARIK 8 TITIK • ✓ TERAPKAN", Math.max(8,l), Math.max(dp(18),t-dp(8)), cp);
+            }
+        }
+
+        private void drawAnnotations(Canvas canvas) {
+            canvas.save();
+            canvas.concat(frozenMatrix);
+            for (Annotation a:items) drawOneSource(canvas,a);
+            canvas.restore();
+        }
+
+        private void drawOneSource(Canvas canvas, Annotation a) {
+            float scale = Math.max(0.35f, Math.min(4f, frozenMatrix.mapRadius(1f)));
+            paint.setColor(a.color);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(dp((int)a.size) * scale);
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setTextSize(dp((int)(18 + a.size)) * scale);
+            paint.setTypeface(Typeface.DEFAULT_BOLD);
+            if (a.type==AnnotationMode.PEN) {
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(dp((int)a.size) * scale);
+                paint.setStrokeCap(Paint.Cap.ROUND);
+                if (a.points != null && a.points.size() > 1) {
+                    Path path = new Path();
+                    path.moveTo(a.points.get(0).x, a.points.get(0).y);
+                    for (int i=1;i<a.points.size();i++) path.lineTo(a.points.get(i).x,a.points.get(i).y);
+                    canvas.drawPath(path,paint);
+                }
+            } else if (a.type==AnnotationMode.MARKER) {
+                paint.setStyle(Paint.Style.FILL); canvas.drawCircle(a.x1,a.y1,dp((int)a.size),paint);
+            } else if (a.type==AnnotationMode.ARROW) {
+                canvas.save();
+                float cx=(a.x1+a.x2)/2f, cy=(a.y1+a.y2)/2f;
+                canvas.rotate(a.rotation, cx, cy);
+                canvas.drawLine(a.x1,a.y1,a.x2,a.y2,paint);
+                double ang=Math.atan2(a.y2-a.y1,a.x2-a.x1); float len=dp(18) * scale;
+                canvas.drawLine(a.x2,a.y2,a.x2-len*(float)Math.cos(ang-.45),a.y2-len*(float)Math.sin(ang-.45),paint);
+                canvas.drawLine(a.x2,a.y2,a.x2-len*(float)Math.cos(ang+.45),a.y2-len*(float)Math.sin(ang+.45),paint);
+                canvas.restore();
+            } else if (a.type==AnnotationMode.LINE) {
+                canvas.drawLine(a.x1,a.y1,a.x2,a.y2,paint);
+            } else if (a.type==AnnotationMode.JUMPER) {
+                // Technician jumper: visible insulated wire plus two pad endpoints.
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeCap(Paint.Cap.ROUND);
+                paint.setStrokeWidth(dp(6) * scale);
+                paint.setColor(a.color);
+                canvas.drawLine(a.x1,a.y1,a.x2,a.y2,paint);
+                paint.setStyle(Paint.Style.FILL);
+                float rr = dp(7) * scale;
+                canvas.drawCircle(a.x1,a.y1,rr,paint);
+                canvas.drawCircle(a.x2,a.y2,rr,paint);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(dp(2) * scale);
+                paint.setColor(Color.WHITE);
+                canvas.drawCircle(a.x1,a.y1,rr+dp(2) * scale,paint);
+                canvas.drawCircle(a.x2,a.y2,rr+dp(2) * scale,paint);
+            } else if (a.type==AnnotationMode.CIRCLE) {
+                canvas.drawOval(new RectF(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.max(a.x1,a.x2),Math.max(a.y1,a.y2)),paint);
+            } else if (a.type==AnnotationMode.RECT) {
+                canvas.drawRect(new RectF(Math.min(a.x1,a.x2),Math.min(a.y1,a.y2),Math.max(a.x1,a.x2),Math.max(a.y1,a.y2)),paint);
+            } else if (a.type==AnnotationMode.HIGHLIGHT) {
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeCap(Paint.Cap.ROUND);
+                paint.setStrokeWidth(dp(22) * scale);
+                paint.setColor(a.color == Color.RED || a.color == Color.YELLOW || a.color == Color.GREEN || a.color == Color.CYAN ? a.color : Color.YELLOW);
+                paint.setAlpha(105);
+                canvas.drawLine(a.x1,a.y1,a.x2,a.y2,paint);
+                paint.setAlpha(255);
+            } else if (a.type==AnnotationMode.TEXT) {
+                paint.setStyle(Paint.Style.FILL);
+                canvas.save();
+                canvas.rotate(a.rotation, a.x1, a.y1);
+                paint.setShadowLayer(dp(3),1,1,Color.BLACK); canvas.drawText(a.text,a.x1,a.y1,paint); paint.clearShadowLayer();
+                canvas.restore();
+            } else if (a.type==AnnotationMode.OCR) {
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(dp(2) * scale);
+                canvas.drawRect(new RectF(a.x1, a.y1, a.x2, a.y2), paint);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setTextSize(dp(14) * scale);
+                paint.setShadowLayer(dp(3), 1, 1, Color.BLACK);
+                canvas.drawText(a.text, a.x1, Math.max(a.y1 - dp(3) * scale, a.y1), paint);
+                paint.clearShadowLayer();
+            }
+        }
+
+        private void drawOne(Canvas canvas, Annotation a) { drawOneSource(canvas,a); }
+
+        void drawAnnotationsToCrop(Canvas canvas,int left,int top,int cw,int ch,int outW,int outH) {
+            canvas.save();
+            float sx=(float)outW/cw, sy=(float)outH/ch;
+            canvas.scale(sx,sy); canvas.translate(-left,-top);
+            for (Annotation a:items) drawOneSource(canvas,a);
+            canvas.restore();
+        }
+
+        private float distancePointToSegment(float px,float py,float x1,float y1,float x2,float y2) {
+            float dx=x2-x1, dy=y2-y1;
+            if (dx==0f && dy==0f) return (float)Math.hypot(px-x1,py-y1);
+            float t=((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy);
+            t=Math.max(0f,Math.min(1f,t));
+            float qx=x1+t*dx, qy=y1+t*dy;
+            return (float)Math.hypot(px-qx,py-qy);
+        }
+
+        private Annotation hitTest(float vx,float vy) {
+            float[] p=viewToSource(vx,vy);
+            float tolerance=dp(28)/Math.max(0.35f,frozenMatrix.mapRadius(1f));
+            for (int i=items.size()-1;i>=0;i--) {
+                Annotation a=items.get(i);
+                if (a.type==AnnotationMode.PEN) {
+                    if (a.points != null) {
+                        for (int j=1;j<a.points.size();j++) {
+                            PointF p0=a.points.get(j-1), p1=a.points.get(j);
+                            if (distancePointToSegment(p[0],p[1],p0.x,p0.y,p1.x,p1.y)<=tolerance) return a;
+                        }
+                    }
+                } else if (a.type==AnnotationMode.ARROW) {
+                    // Test against the actual rotated shaft.
+                    float cx=(a.x1+a.x2)/2f, cy=(a.y1+a.y2)/2f;
+                    double r=Math.toRadians(-a.rotation), cs=Math.cos(r), sn=Math.sin(r);
+                    float rx=(float)(cx+(p[0]-cx)*cs-(p[1]-cy)*sn);
+                    float ry=(float)(cy+(p[0]-cx)*sn+(p[1]-cy)*cs);
+                    if (distancePointToSegment(rx,ry,a.x1,a.y1,a.x2,a.y2)<=tolerance) return a;
+                } else if (a.type==AnnotationMode.JUMPER) {
+                    if (distancePointToSegment(p[0],p[1],a.x1,a.y1,a.x2,a.y2)<=tolerance*1.5f) return a;
+                } else if (a.type==AnnotationMode.TEXT) {
+                    // Rotate the touch point back around the text anchor before hit testing.
+                    double r=Math.toRadians(-a.rotation), cs=Math.cos(r), sn=Math.sin(r);
+                    float dx=p[0]-a.x1, dy=p[1]-a.y1;
+                    float rx=(float)(dx*cs-dy*sn), ry=(float)(dx*sn+dy*cs);
+                    float scale = Math.max(0.35f, Math.min(4f, frozenMatrix.mapRadius(1f)));
+                    paint.setTextSize(dp((int)(18 + a.size)) * scale);
+                    paint.setTypeface(Typeface.DEFAULT_BOLD);
+                    float textW=paint.measureText(a.text==null?"":a.text);
+                    float textH=paint.getTextSize();
+                    if (rx>=-tolerance && rx<=textW+tolerance && ry>=-textH-tolerance && ry<=tolerance) return a;
+                } else {
+                    float minX=Math.min(a.x1,a.x2)-tolerance, maxX=Math.max(a.x1,a.x2)+tolerance;
+                    float minY=Math.min(a.y1,a.y2)-tolerance, maxY=Math.max(a.y1,a.y2)+tolerance;
+                    if (a.type==AnnotationMode.MARKER) { minX=a.x1-tolerance;maxX=a.x1+tolerance;minY=a.y1-tolerance;maxY=a.y1+tolerance; }
+                    if (p[0]>=minX && p[0]<=maxX && p[1]>=minY && p[1]<=maxY) return a;
+                }
+            }
+            return null;
+        }
+
+        @Override public boolean onTouchEvent(MotionEvent e) {
+            if (!frozen || mode==AnnotationMode.NONE) return false;
+            float x=e.getX(), y=e.getY();
+            if (mode == AnnotationMode.JUMPER) {
+                jumperScaleDetector.onTouchEvent(e);
+                if (jumperPinching || e.getPointerCount() > 1) {
+                    if (e.getActionMasked() == MotionEvent.ACTION_UP || e.getActionMasked() == MotionEvent.ACTION_CANCEL) jumperPinching = false;
+                    return true;
+                }
+                if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    startX=x; startY=y; endX=x; endY=y; drawing=true; invalidate(); return true;
+                }
+                if (e.getActionMasked() == MotionEvent.ACTION_MOVE && drawing) {
+                    endX=x; endY=y; invalidate(); return true;
+                }
+                if (e.getActionMasked() == MotionEvent.ACTION_UP && drawing) {
+                    endX=x; endY=y;
+                    float[] a=viewToSource(startX,startY), b=viewToSource(endX,endY);
+                    float distance=(float)Math.hypot(b[0]-a[0], b[1]-a[1]);
+                    if (distance >= dp(8)) {
+                        pushUndo();
+                        items.add(Annotation.shape(AnnotationMode.JUMPER,a[0],a[1],b[0],b[1],Color.YELLOW,Math.max(4f,strokeDp)));
+                    }
+                    drawing=false; invalidate(); return true;
+                }
+                return true;
+            }
+            if (mode==AnnotationMode.SELECT) {
+                int action=e.getActionMasked();
+                if (action==MotionEvent.ACTION_DOWN) {
+                    selected=hitTest(x,y);
+                    moveHistoryPushed=false;
+                    lastSelectX=x; lastSelectY=y;
+                    rotatingSelected=false;
+                    lastRotateAngle=0f;
+                    return true;
+                }
+                if (selected!=null && e.getPointerCount()>=2 &&
+                        (action==MotionEvent.ACTION_POINTER_DOWN || action==MotionEvent.ACTION_MOVE || action==MotionEvent.ACTION_POINTER_UP)) {
+                    if (e.getPointerCount()>=2) {
+                        float x0=e.getX(0), y0=e.getY(0), x1=e.getX(1), y1=e.getY(1);
+                        float angle=(float)Math.toDegrees(Math.atan2(y1-y0,x1-x0));
+                        float dist=(float)Math.hypot(x1-x0,y1-y0);
+                        if (!transformingSelected || action==MotionEvent.ACTION_POINTER_DOWN) {
+                            pushUndo();
+                            lastRotateAngle=angle; lastTransformDistance=dist;
+                            rotatingSelected=true; transformingSelected=true;
+                        } else {
+                            float delta=angle-lastRotateAngle;
+                            while(delta>180f) delta-=360f; while(delta<-180f) delta+=360f;
+                            selected.rotation+=delta;
+                            float factor=dist/Math.max(1f,lastTransformDistance);
+                            if (Math.abs(factor-1f)>0.003f) {
+                                float minSize=2f, maxSize=20f;
+                                selected.size=Math.max(minSize,Math.min(maxSize,selected.size*factor));
+                                lastTransformDistance=dist;
+                            }
+                            lastRotateAngle=angle; invalidate();
+                        }
+                    }
+                    if(action==MotionEvent.ACTION_POINTER_UP) {
+                        rotatingSelected=false; transformingSelected=false; lastSelectX=x; lastSelectY=y;
+                    }
+                    return true;
+                }
+                if(action==MotionEvent.ACTION_MOVE && selected!=null && !rotatingSelected) {
+                    if (!moveHistoryPushed) { pushUndo(); moveHistoryPushed=true; }
+                    float[] p1=viewToSource(lastSelectX,lastSelectY), p2=viewToSource(x,y);
+                    float dx=p2[0]-p1[0], dy=p2[1]-p1[1];
+                    selected.x1+=dx; selected.y1+=dy; selected.x2+=dx; selected.y2+=dy;
+                    lastSelectX=x; lastSelectY=y;
+                    invalidate();
+                    return true;
+                }
+                if(action==MotionEvent.ACTION_UP || action==MotionEvent.ACTION_CANCEL) {
+                    // A simple tap on a text object opens the editor directly.
+                    // Dragging still only moves the selected object.
+                    boolean simpleTap = Math.hypot(x-lastSelectX, y-lastSelectY) < dp(12);
+                    rotatingSelected=false;
+                    lastSelectX=x; lastSelectY=y;
+                    invalidate();
+                    if (action==MotionEvent.ACTION_UP && simpleTap && selected != null && selected.type==AnnotationMode.TEXT) {
+                        editSelectedText();
+                    }
+                    return true;
+                }
+                return true;
+            }
