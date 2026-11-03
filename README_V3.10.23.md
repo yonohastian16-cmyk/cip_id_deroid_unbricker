@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.23
+# Deroid Unbricker Nota Microscope V3.10.23
 
 - Database tetap full-screen dan kamera ditutup saat Database dibuka.
 - Ditambahkan menu **📊 TABEL GRADE eMMC** di Database.

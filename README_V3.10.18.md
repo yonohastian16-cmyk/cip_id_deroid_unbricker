@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.18
+# Deroid Unbricker Nota Microscope V3.10.18
 
 ## Select / Pilih — handle lebih nyaman
 - Tetap memakai 4 handle sudut yang bersih, tanpa garis putus-putus atau handle kuning.

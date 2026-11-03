@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8 — EDITOR PRO FINAL
+# Deroid Unbricker Nota Microscope V3.8 — EDITOR PRO FINAL
 
 Basis: V3.7 Live PRO.
 

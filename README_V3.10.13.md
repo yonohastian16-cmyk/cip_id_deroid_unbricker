@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.14
+# Deroid Unbricker Nota Microscope V3.10.14
 
 - Penyederhanaan UI Select/Pilih.
 - Seleksi memakai frame cyan tipis.

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.11.0 — NOTA SERVIS
+# Deroid Unbricker Nota Microscope V3.11.0 — NOTA SERVIS
 
 Tombol **🧾 Nota** baru di bar atas kamera (di sebelah Galeri).
 

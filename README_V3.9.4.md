@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.4
+# Deroid Unbricker Nota Microscope V3.9.4
 
 - Baseline dari V3.9.3.
 - Editor PRO mempertahankan pilih, pindah, resize, rotasi, undo/redo, duplikat, hapus, Simpan, dan Share.

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.9 — Editor PRO Stability
+# Deroid Unbricker Nota Microscope V3.10.9 — Editor PRO Stability
 
 Perubahan dari V3.10.7:
 - Memperbaiki Undo/Redo transform objek: resize handle dan rotation handle sekarang benar-benar menyimpan snapshot sebelum perubahan.

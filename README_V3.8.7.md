@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8.7
+# Deroid Unbricker Nota Microscope V3.8.7
 
 - Baseline dari V3.8.6.
 - Simpan dan Share tetap selalu terlihat.

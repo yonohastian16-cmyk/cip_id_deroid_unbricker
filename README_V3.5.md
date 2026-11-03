@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.5
+# Deroid Unbricker Nota Microscope V3.5
 
 ## Microscope Live PRO
 - Preview kamera lebih luas: bottom sheet default diturunkan dan kontrol dibuat lebih ringkas.

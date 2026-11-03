@@ -1,4 +1,4 @@
-# Jejak Teknisi — eMMC Database V1
+# Deroid Unbricker Nota — eMMC Database V1
 
 Fitur:
 - Tombol eMMC DB di header tanpa mengganti halaman microscope.

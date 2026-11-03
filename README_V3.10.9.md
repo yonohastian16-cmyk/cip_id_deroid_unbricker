@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.9
+# Deroid Unbricker Nota Microscope V3.10.9
 
 ## Selection UI PRO
 - Mengganti kotak seleksi putih putus-putus menjadi garis solid cyan.

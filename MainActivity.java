@@ -1,4 +1,4 @@
-package com.jejakteknisi.gradeemmc;
+package com.deroid.unbrickernota.gradeemmc;
 import android.app.*; import android.os.*; import android.content.*; import android.database.sqlite.*; import android.database.Cursor; import android.graphics.Color; import android.view.*; import android.widget.*; import java.io.*; import java.util.*;
 public class MainActivity extends Activity {
  DB db; LinearLayout list; EditText search; Spinner filter; TextView count; ArrayList<Item> data=new ArrayList<>();

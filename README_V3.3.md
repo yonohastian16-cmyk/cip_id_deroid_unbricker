@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.3.0
+# Deroid Unbricker Nota Microscope V3.3.0
 
 ## Editor: Select & Transform
 - Semua anotasi disimpan pada koordinat gambar/source, lalu dirender memakai transform gambar yang sama.

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.24
+# Deroid Unbricker Nota Microscope V3.10.24
 
 - Prioritas Database: KUIS dan BELAJAR CEPAT.
 - KUIS: mode Mudah, Sedang, Sulit, Kesalahan Saya, dan Cepat 30 detik.

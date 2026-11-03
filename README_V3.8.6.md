@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8.7
+# Deroid Unbricker Nota Microscope V3.8.7
 
 - Baseline V3.8.5 dipertahankan.
 - Crop PRO sekarang mempertahankan objek edit yang berada pada gambar; koordinat anotasi ditranslasikan mengikuti area crop.

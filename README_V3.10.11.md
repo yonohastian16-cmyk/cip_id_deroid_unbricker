@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.11
+# Deroid Unbricker Nota Microscope V3.10.11
 
 ## Pilih PRO
 - Seleksi memakai border cyan solid tipis dengan halo gelap.

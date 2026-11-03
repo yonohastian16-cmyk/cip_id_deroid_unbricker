@@ -1,4 +1,4 @@
-package com.jejakteknisi.magnifier;
+package com.deroid.unbrickernota;
 
 import android.Manifest;
 import android.app.AlertDialog;

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.15
+# Deroid Unbricker Nota Microscope V3.10.15
 
 - Select/Pilih: touch handles dibuat konsisten dengan 4 handle sudut yang terlihat.
 - Handle sisi yang tidak terlihat tidak lagi aktif.

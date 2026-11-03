@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.3.1 Build Fix 2
+# Deroid Unbricker Nota Microscope V3.3.1 Build Fix 2
 
 Fix compile errors in MainActivity.AnnotationView by declaring the selection/transform state used by the editor:
 - selectedHandle

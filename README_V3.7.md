@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.7
+# Deroid Unbricker Nota Microscope V3.7
 
 V3.7 adalah penyempurnaan dari V3.6 dengan fokus Microscope Live PRO.
 

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.0
+# Deroid Unbricker Nota Microscope V3.9.0
 
 - Baseline V3.8.9 yang sudah berhasil build.
 - Editor PRO: tombol Hapus sekarang menghapus objek yang sedang dipilih.

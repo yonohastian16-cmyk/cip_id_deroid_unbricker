@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.2 — Jumper Endpoint PRO
+# Deroid Unbricker Nota Microscope V3.10.2 — Jumper Endpoint PRO
 
 Peningkatan dari V3.10.1 untuk editor Jumper:
 - Endpoint Jumper A dan B dapat dipilih dan digeser secara terpisah.

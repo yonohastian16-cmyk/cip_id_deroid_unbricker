@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.1
+# Deroid Unbricker Nota Microscope V3.9.1
 
 Stabilisasi Editor PRO berdasarkan V3.8.x.
 

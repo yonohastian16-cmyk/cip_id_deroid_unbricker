@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.12
+# Deroid Unbricker Nota Microscope V3.10.12
 
 ## Pilih PRO UX
 - Seleksi tidak langsung bergerak karena jitter jari saat tap.

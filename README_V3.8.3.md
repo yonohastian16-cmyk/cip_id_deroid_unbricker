@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8.3
+# Deroid Unbricker Nota Microscope V3.8.3
 
 - Perbaikan GitHub Actions: tidak lagi menggunakan `android-actions/setup-android@v3`.
 - Menggunakan Android SDK bawaan GitHub-hosted runner.

@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.2
+# Deroid Unbricker Nota Microscope V3.9.2
 
 - Versi aplikasi dan nama artifact GitHub Actions disinkronkan ke V3.9.2.
 - Editor PRO dari V3.9.1 dipertahankan.

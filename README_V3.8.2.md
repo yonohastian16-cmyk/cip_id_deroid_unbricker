@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8.2 — EDITOR OBJECT MOVE/ROTATE
+# Deroid Unbricker Nota Microscope V3.8.2 — EDITOR OBJECT MOVE/ROTATE
 
 - Tap annotation yang sudah ada dari tool apa pun untuk langsung memilihnya.
 - Setelah dipilih, objek dapat digeser dengan drag.

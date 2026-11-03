@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.1
+# Deroid Unbricker Nota Microscope V3.10.1
 
 ## Jumper PRO
 - Jumper menampilkan jalur kabel yang jelas dengan dua pad endpoint.

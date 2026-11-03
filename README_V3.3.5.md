@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.3.5
+# Deroid Unbricker Nota Microscope V3.3.5
 
 ## Editor gabungan
 - Teks fixed-size saat zoom: posisi tetap mengikuti gambar, ukuran visual teks tetap.

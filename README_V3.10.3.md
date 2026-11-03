@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.3 — Editor Style PRO
+# Deroid Unbricker Nota Microscope V3.10.3 — Editor Style PRO
 
 Peningkatan dari V3.10.2:
 - Warna dan ukuran yang dipilih sekarang menjadi **preset untuk objek baru**, bukan hanya objek yang sedang dipilih.

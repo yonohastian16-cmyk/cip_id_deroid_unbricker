@@ -1,8 +1,8 @@
-# Jejak Teknisi Microscope V3.3.6
+# Deroid Unbricker Nota Microscope V3.3.6
 
 ## LIVE bottom sheet + preview lebih luas
 - Tulisan `JEJAK TEKNISI / MICROSCOPE V3.2` di header kamera dihilangkan.
-- Logo Jejak Teknisi tetap dipertahankan.
+- Logo Deroid Unbricker Nota tetap dipertahankan.
 - Header LIVE dibuat lebih ringkas agar preview kamera lebih luas.
 - Kontrol bawah LIVE sekarang menjadi bottom sheet.
 - Bottom sheet bisa digeser naik/turun melalui handle `━`.

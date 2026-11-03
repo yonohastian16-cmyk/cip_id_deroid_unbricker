@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.4
+# Deroid Unbricker Nota Microscope V3.10.4
 
 ## Editor Precision PRO
 - Quick rotate 15° tetap tersedia.

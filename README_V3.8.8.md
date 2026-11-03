@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.1
+# Deroid Unbricker Nota Microscope V3.9.1
 
 - Baseline dari V3.8.7.
 - Ekspor hasil Freeze/Edit menggunakan PNG lossless agar teks, garis, panah, titik, highlight, jumper, OCR, dan objek lain tidak mengalami kompresi JPEG.

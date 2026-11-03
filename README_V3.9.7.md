@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.7
+# Deroid Unbricker Nota Microscope V3.9.7
 
 ## Editor PRO — Select & Multi-touch Stability
 - Selection badge menunjukkan jenis objek yang sedang dipilih.

@@ -1,6 +1,6 @@
 V3.2.8 • Jumper Tool + Pinch Zoom
 
-# Jejak Teknisi Microscope V3.2
+# Deroid Unbricker Nota Microscope V3.2
 
 Tahap V3.2 fokus pada Editor Gambar teknisi.
 
@@ -16,7 +16,7 @@ Catatan build: proyek menggunakan Android Gradle Plugin/AndroidX dan workflow Gi
 
 
 ## V3.2.1 – Editor Profesional
-- Referensi desain mengikuti mockup Jejak Teknisi yang disepakati.
+- Referensi desain mengikuti mockup Deroid Unbricker Nota yang disepakati.
 - Senter/Lampu tetap berada di tampilan awal Microscope (LIVE).
 - Edit hanya dimulai dari FREEZE atau Galeri.
 - Editor menambahkan Pen bebas berbasis objek, bersama marker, panah, garis, lingkaran, kotak, highlight, teks, OCR, undo/redo, crop, rotate, adjustment, simpan dan share.

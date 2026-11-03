@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.9.3
+# Deroid Unbricker Nota Microscope V3.9.3
 
 - Baseline V3.9.2.
 - Editor PRO: mode Pilih sekarang menampilkan kontrol kontekstual Warna/Ukuran.

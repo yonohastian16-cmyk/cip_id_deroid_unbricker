@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.10.19
+# Deroid Unbricker Nota Microscope V3.10.19
 
 ## Perubahan
 - Toolbar kontrol objek (warna, ukuran, rotasi, duplikat, hapus) sekarang memakai horizontal scroll.

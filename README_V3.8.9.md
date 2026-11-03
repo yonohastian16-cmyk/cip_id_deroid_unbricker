@@ -1,4 +1,4 @@
-# Jejak Teknisi Microscope V3.8.9
+# Deroid Unbricker Nota Microscope V3.8.9
 
 - Baseline V3.9.1 dipertahankan.
 - Tambah quick double-tap zoom pada kamera LIVE: toggle 1× / 2×.
