@@ -1,0 +1,15 @@
+{
+  "categories": [
+    "A+++ 256GB", "A+++ 128GB", "A+++ 64GB", "A++ 256G", "A++ 128G", "A++ 64GB",
+    "A++ 32 B", "A++ 32 A", "A+- B", "A+- A", "A Khusus", "A+/A-"
+  ],
+  "items": [
+    {"category": "A+++ 256GB", "merk": "SAMSUNG", "kode": "KLUEG8UHDB", "no": "C2D1"},
+    {"category": "Pilihan A+++ 128G", "merk": "SAMSUNG", "kode": "KLMDGAWEBD", "no": ""},
+    {"category": "Pilihan A+++ 128G", "merk": "SAMSUNG", "kode": "KLUFG4NHHB", "no": ""},
+    {"category": "Pilihan A+++ 128G", "merk": "SAMSUNG", "kode": "KLUDG4UHGC", "no": ""},
+    {"category": "Pilihan A+++ 64G", "merk": "SAMSUNG", "kode": "KLUCG4J1ED", "no": ""},
+    {"category": "Pilihan A+++ 64G", "merk": "SAMSUNG", "kode": "KLUCG8G1BD", "no": ""},
+    {"category": "Pilihan A+++ 64G", "merk": "SAMSUNG", "kode": "KLMCG8GESD", "no": ""}
+  ]
+}
